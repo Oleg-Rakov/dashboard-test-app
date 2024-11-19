@@ -1,0 +1,11 @@
+<form [formGroup]="filterForm" (ngSubmit)="applyFilter()" class="filter-form">
+  <div>
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" formControlName="startDate" />
+  </div>
+  <div>
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" formControlName="endDate" />
+  </div>
+  <button type="submit" [disabled]="filterForm.invalid">Apply Filter</button>
+</form>

@@ -1,0 +1,9 @@
+<div class="dashboard">
+  <app-header></app-header>
+  <app-summary></app-summary>
+  <app-filter-form (dateRangeSelected)="onDateRangeSelected($event)"></app-filter-form>
+  <div class="charts">
+    <app-line-chart></app-line-chart>
+    <app-bar-chart></app-bar-chart>
+  </div>
+</div>

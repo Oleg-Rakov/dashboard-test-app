@@ -1,0 +1,15 @@
+<div class="chart-controls">
+  <label for="data-switch">Select Dataset:</label>
+  <select id="data-switch" (change)="switchData($event)">
+    <option value="Dataset 1">Dataset 1</option>
+    <option value="Dataset 2">Dataset 2</option>
+  </select>
+</div>
+<div>
+  <canvas baseChart
+          [data]="barChartData"
+          [options]="barChartOptions"
+          [type]="barChartType"
+          width="600">
+  </canvas>
+</div>
