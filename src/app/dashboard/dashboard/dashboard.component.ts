@@ -1,13 +1,19 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, OnInit} from '@angular/core';
 import {HeaderComponent} from '../../shared/header/header.component';
 import {SummaryComponent} from '../../shared/summary/summary.component';
 import {LineChartComponent} from '../../shared/line-chart/line-chart.component';
 import {BarChartComponent} from '../../shared/bar-chart/bar-chart.component';
 import {FilterFormComponent} from '../../shared/filter-form/filter-form.component';
+import {DataService} from '../../core/data.service';
+import {DashboardData} from '../../core/models/dashboard-data.model';
+import {Meta, Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  providers: [
+    DataService,
+  ],
   imports: [
     HeaderComponent,
     SummaryComponent,
@@ -22,39 +28,71 @@ export class DashboardComponent {
   @ViewChild(LineChartComponent) lineChartComponent?: LineChartComponent;
   @ViewChild(BarChartComponent) barChartComponent?: BarChartComponent;
 
-  // Оригинальные данные для графиков
-  lineChartOriginalData = [65, 59, 80, 81, 56, 55, 40];
-  barChartOriginalData = [30, 50, 70, 20, 90, 40];
+  dashboardData: DashboardData | null = null; // Dashboard data get from request
 
-  // Обработка выбранного диапазона дат
+  constructor(private dataService: DataService, private meta: Meta, private title: Title) {
+  }
+
+
+  ngOnInit(): void {
+    // Get data from dashboard
+    this.title.setTitle('Dashboard Application');
+    this.meta.addTags([
+      {name: 'description', content: 'A sample Angular dashboard with SSR'},
+      {name: 'keywords', content: 'Angular, SSR, Dashboard'},
+    ]);
+
+    console.log('dash init')
+    this.dataService.getDashboardData().subscribe((data) => {
+      this.dashboardData = data;
+      this.initializeCharts(); // Init charts with data
+    });
+  }
+
+  initializeCharts(): void {
+    if (this.dashboardData) {
+      if (this.lineChartComponent) {
+        this.lineChartComponent.lineChartData.datasets[0].data =
+          this.dashboardData.lineChart.values || []; // If undefined set empty array
+        this.lineChartComponent.lineChartData.datasets[0].label =
+          this.dashboardData.lineChart.label || 'No Data';
+        this.lineChartComponent.lineChartData.labels =
+          this.dashboardData.lineChart.labels || [];
+        this.lineChartComponent.chart?.update();
+      }
+
+      if (this.barChartComponent) {
+        this.barChartComponent.barChartData.datasets[0].data =
+          this.dashboardData.barChart.values || []; // If undefined set empty array
+        this.barChartComponent.barChartData.datasets[0].label =
+          this.dashboardData.barChart.label || 'No Data';
+        this.barChartComponent.barChartData.labels =
+          this.dashboardData.barChart.labels || [];
+        this.barChartComponent.chart?.update();
+      }
+    }
+  }
+
   onDateRangeSelected(dateRange: { startDate: string; endDate: string }): void {
-    console.log('Date range selected:', dateRange);
     this.updateChartsData(dateRange.startDate, dateRange.endDate);
   }
 
-  // Логика обновления данных для графиков
   updateChartsData(startDate: string, endDate: string): void {
-    console.log(`Updating charts with data from ${startDate} to ${endDate}`);
+    if (this.dashboardData) {
+      const filteredLineData = this.dashboardData.lineChart.values.slice(0, 5);
+      const filteredBarData = this.dashboardData.barChart.values.slice(1, 5);
 
-    // Пример фильтрации: оставляем только первые N значений
-    const filteredLineData = this.lineChartOriginalData.slice(0, 5);
-    const filteredBarData = this.barChartOriginalData.slice(1, 5);
+      if (this.lineChartComponent) {
+        this.lineChartComponent.lineChartData.datasets[0].data = [...filteredLineData];
+        this.lineChartComponent.lineChartData.datasets[0].label = `Filtered Data (${startDate} - ${endDate})`;
+        this.lineChartComponent.chart?.update();
+      }
 
-    console.log('Filtered Line Data:', filteredLineData);
-    console.log('Filtered Bar Data:', filteredBarData);
-
-    // Update data linear chart
-    if (this.lineChartComponent) {
-      this.lineChartComponent.lineChartData.datasets[0].data = [...filteredLineData];
-      this.lineChartComponent.lineChartData.datasets[0].label = `Filtered Data (${startDate} - ${endDate})`;
-      this.lineChartComponent.chart?.update();
-    }
-
-    // Update data block chart
-    if (this.barChartComponent) {
-      this.barChartComponent.barChartData.datasets[0].data = [...filteredBarData];
-      this.barChartComponent.barChartData.datasets[0].label = `Filtered Data (${startDate} - ${endDate})`;
-      this.barChartComponent.chart?.update();
+      if (this.barChartComponent) {
+        this.barChartComponent.barChartData.datasets[0].data = [...filteredBarData];
+        this.barChartComponent.barChartData.datasets[0].label = `Filtered Data (${startDate} - ${endDate})`;
+        this.barChartComponent.chart?.update();
+      }
     }
   }
 }

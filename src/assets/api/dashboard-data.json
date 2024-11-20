@@ -1,0 +1,12 @@
+{
+  "lineChart": {
+    "values": [65, 59, 80, 81, 56, 55, 40],
+    "labels": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    "label": "Weekly Sales"
+  },
+  "barChart": {
+    "values": [30, 50, 70, 20, 90, 40],
+    "labels": ["Product A", "Product B", "Product C", "Product D", "Product E", "Product F"],
+    "label": "Product Sales"
+  }
+}

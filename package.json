@@ -7,10 +7,6 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr": "npm run build:ssr && node dist/dashboard-app/server/main.js",
-    "build:ssr": "ng build && ng run dashboard-app:server",
-    "dev:ssr": "ng run dashboard-app:serve-ssr",
-    "prerender": "ng run dashboard-app:prerender",
     "serve:ssr:dashboard-app": "npm run build && node dist/dashboard-app/server/server.mjs"
   },
   "private": true,

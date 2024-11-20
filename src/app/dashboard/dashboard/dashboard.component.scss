@@ -11,3 +11,9 @@
     margin-top: 1rem;
   }
 }
+
+@media (max-width: 768px) {
+  .charts {
+    flex-direction: column;
+  }
+}
